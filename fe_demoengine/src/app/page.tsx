@@ -1,11 +1,30 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useState } from "react";
+import Form from "@/atom/Form";
 
-export default function LoginPage() {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("email");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (rememberMe) {
+      localStorage.setItem("email", email);
+    } else {
+      localStorage.removeItem("email");
+    }
+  };
 
   return (
     <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
@@ -16,19 +35,18 @@ export default function LoginPage() {
             Sinch Creative Suite
           </h1>
           <p className="text-sm text-white/70 max-w-md">
-            Sinch Demo engine and Creative Studio for RCS
+            Sinch Demo engine and Creative Studio
           </p>
         </div>
         <Image
           src="/loginbackground.jpg"
-          alt="Login visual"
+          alt="login background"
           fill
           className="absolute inset-0 w-full h-full object-cover opacity-50"
         />
         <div className="absolute inset-0 border border-white rounded-xl m-8 pointer-events-none"></div>
       </div>
 
-      {/* Right - Login Form */}
       <div className="flex items-center justify-center px-6 lg:px-20">
         <div className="w-full max-w-md space-y-8">
           <div className="flex flex-col items-center">
@@ -45,7 +63,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <Form onSubmit={handleSubmit}>
             <div>
               <label className="block mb-1 text-sm font-medium">Email</label>
               <input
@@ -56,6 +74,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+
             <div>
               <label className="block mb-1 text-sm font-medium">Password</label>
               <input
@@ -71,21 +90,38 @@ export default function LoginPage() {
                 </a>
               </div>
             </div>
+
+            <div className="min-h-[10px] mt-1">
+              {password.length > 0 && password.length < 6 && (
+                <p className="text-sm text-red-600">
+                  Password must be at least 6 characters.
+                </p>
+              )}
+            </div>
+
             <div className="flex items-center">
-              <input type="checkbox" id="remember" className="mr-2" />
+              <input
+                type="checkbox"
+                id="remember"
+                className="mr-2"
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
               <label htmlFor="remember" className="text-sm">
                 Remember me
               </label>
             </div>
+
             <button
               type="submit"
               className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
             >
               Sign In
             </button>
-          </form>
+          </Form>
         </div>
       </div>
     </main>
   );
-}
+};
+
+export default LoginPage;
