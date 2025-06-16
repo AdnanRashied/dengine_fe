@@ -43,8 +43,6 @@ test.describe("Login Page", () => {
     await page.getByPlaceholder("Enter your password").fill("securepass");
     await page.uncheck('input[type="checkbox"]#remember');
     await page.getByRole("button", { name: "Sign In" }).click();
-
-    // Simulate page reload
     await page.reload();
 
     await expect(emailField).toHaveValue("");
