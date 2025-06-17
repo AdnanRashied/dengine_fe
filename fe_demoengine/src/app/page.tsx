@@ -1,12 +1,17 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Form from "@/atom/Form";
+import { getEnv } from "@/lib/getEnvVar";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
@@ -17,12 +22,33 @@ const LoginPage = () => {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const rememberCheckBox = () => {
     if (rememberMe) {
       localStorage.setItem("email", email);
     } else {
       localStorage.removeItem("email");
+    }
+  };
+
+  const API_ROUTE = getEnv("NEXT_PUBLIC_API_ROUTE_LOGIN");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    rememberCheckBox();
+    const response = await fetch(API_ROUTE, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
+    });
+    const data = await response.json();
+    if (!response.ok || data.error) {
+      setError(data.error);
+      throw new Error(data.error);
+    } else if (response.ok && data.success) {
+      router.push("/dashboard");
     }
   };
 
