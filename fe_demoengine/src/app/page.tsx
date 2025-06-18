@@ -30,7 +30,7 @@ const LoginPage = () => {
     }
   };
 
-  const API_ROUTE = getEnv("NEXT_PUBLIC_API_ROUTE_LOGIN");
+  const API_ROUTE = process.env.NEXT_PUBLIC_API_ROUTE_LOGIN!;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
